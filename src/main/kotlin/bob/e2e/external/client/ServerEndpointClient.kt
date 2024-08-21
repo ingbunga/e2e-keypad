@@ -4,7 +4,6 @@ import bob.e2e.domain.model.Pad
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
-import reactor.core.publisher.Mono
 
 @Component
 class ServerEndpointClient(
@@ -17,8 +16,7 @@ class ServerEndpointClient(
     suspend fun sendAuthCoroutine(pad: Pad, userInput: String): String {
         val requestBody = mapOf(
             "userInput" to userInput,
-            "keyHashMap" to pad.keysToMap(),
-            "keyLength" to 36
+            "keyHashMap" to pad.keysToMapN2I()
         )
 
         return webClient.post().uri("/auth")

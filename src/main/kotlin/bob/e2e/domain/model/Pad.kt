@@ -6,8 +6,13 @@ data class Pad (
     val keys: List<Key>,
     val createdAt: Long,
 ) {
-    fun keysToMap(): Map<String, String> {
+    fun keysToMapI2N(): Map<String, String> {
         return keys.filter { it.number >= 0 }
                    .associate { it.id to it.number.toString() }
+    }
+
+    fun keysToMapN2I(): Map<String, String> {
+        return keys.filter { it.number >= 0 }
+            .associate { it.number.toString() to it.id }
     }
 }

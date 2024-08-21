@@ -4,10 +4,7 @@ import bob.e2e.data.repository.PadRepository
 import bob.e2e.domain.model.Key
 import bob.e2e.domain.model.Pad
 import bob.e2e.external.client.ServerEndpointClient
-import jakarta.validation.constraints.Null
 import org.springframework.stereotype.Service
-import java.awt.Image
-import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -74,7 +71,7 @@ class PadService (
     }
 
     fun decode(pad: Pad, userInput: String, keyLength: Int): String {
-        val keyMap = pad.keysToMap()
+        val keyMap = pad.keysToMapI2N()
         return userInput.chunked(keyLength)
                         .mapNotNull(keyMap::get)
                         .joinToString("")
