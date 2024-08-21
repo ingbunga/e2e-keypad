@@ -15,14 +15,14 @@ import java.util.*
 
 @Service
 class PadService (
-    private val repository: PadRepository
+    private val padRepository: PadRepository,
 ) {
     fun getRandomPad(id: String) : Pad {
         val numberList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1)
 
         val randomKeyList = numberList.shuffled().map {
             Key(
-                UUID.randomUUID().toString(),
+                if (it >= 0) UUID.randomUUID().toString() else "",
                 it
             )
         }
@@ -31,9 +31,11 @@ class PadService (
             id = id,
             image = "",
             keys = randomKeyList,
+            createdAt = System.currentTimeMillis(),
         )
     }
 
+    // TODO(Image cache)
     fun getImageFromPad(pad: Pad, rows: Int, cols: Int) : String {
         val imagePath = "./src/main/resources/keypad"
         require(pad.keys.size == rows * cols) { "숫자 개수가 행과 열의 곱과 일치해야 합니다." }
@@ -59,6 +61,9 @@ class PadService (
         outputStream.close()
 
         return Base64.getEncoder().encodeToString(imageBytes)
+    }
 
+    fun savePad(pad: Pad) {
+        padRepository.insert(pad)
     }
 }
