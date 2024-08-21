@@ -25,17 +25,15 @@ class PadController (
 
     @PostMapping("/submit")
     @CrossOrigin(origins = ["*"], methods = [RequestMethod.POST]) // TODO(fix devil cors code)
-    fun submit(
+    suspend fun submit(
         @RequestBody submitRequestDto: SubmitRequestDto
     ): SubmitResponseDto {
         val pad = padService.getPadFromId(submitRequestDto.padId)
-        val keyLength = 36 // UUID length
 
         val decoded = pad?.let {
-            padService.decode(
-                it,
-                submitRequestDto.userInput,
-                keyLength
+            padService.passToEndpoint(
+                pad,
+                submitRequestDto.userInput
             )
         } ?: ""
 

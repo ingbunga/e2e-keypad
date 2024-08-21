@@ -3,6 +3,7 @@ package bob.e2e.domain.service
 import bob.e2e.data.repository.PadRepository
 import bob.e2e.domain.model.Key
 import bob.e2e.domain.model.Pad
+import bob.e2e.external.client.ServerEndpointClient
 import jakarta.validation.constraints.Null
 import org.springframework.stereotype.Service
 import java.awt.Image
@@ -16,6 +17,7 @@ import java.util.*
 @Service
 class PadService (
     private val padRepository: PadRepository,
+    private val endpointClient: ServerEndpointClient
 ) {
     fun getRandomPad(id: String) : Pad {
         val numberList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1)
@@ -72,9 +74,13 @@ class PadService (
     }
 
     fun decode(pad: Pad, userInput: String, keyLength: Int): String {
-        val keyMap = pad.keys.associate { it.id to it.number.toString() }
+        val keyMap = pad.keysToMap()
         return userInput.chunked(keyLength)
                         .mapNotNull(keyMap::get)
                         .joinToString("")
+    }
+
+    suspend fun passToEndpoint(pad: Pad, userInput: String): String {
+        return endpointClient.sendAuthCoroutine(pad, userInput)
     }
 }
