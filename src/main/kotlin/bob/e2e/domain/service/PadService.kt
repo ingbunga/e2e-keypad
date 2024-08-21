@@ -66,4 +66,15 @@ class PadService (
     fun savePad(pad: Pad) {
         padRepository.insert(pad)
     }
+
+    fun getPadFromId(id: String): Pad? {
+        return padRepository.selectById(id)
+    }
+
+    fun decode(pad: Pad, userInput: String, keyLength: Int): String {
+        val keyMap = pad.keys.associate { it.id to it.number.toString() }
+        return userInput.chunked(keyLength)
+                        .mapNotNull(keyMap::get)
+                        .joinToString("")
+    }
 }

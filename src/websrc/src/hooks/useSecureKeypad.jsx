@@ -1,8 +1,8 @@
 "use client";
 
-import {useEffect, useMemo, useState} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from "axios";
-import {JSEncrypt} from "jsencrypt";
+import { JSEncrypt } from "jsencrypt";
 
 export default function useSecureKeypad() {
   const [keypad, setKeypad] = useState(null);
@@ -20,7 +20,8 @@ export default function useSecureKeypad() {
   }
 
   const onKeyPressed = (row, col) => {
-    setUserInput(e => e + keypad.keys[row*4+col]);
+    if (!keypad.keys[row * 4 + col]) return;
+    setUserInput(e => e + keypad.keys[row * 4 + col]);
     _setUserPressCount(e => e + 1);
   }
 
@@ -30,8 +31,25 @@ export default function useSecureKeypad() {
   }, [userPressCount]);
 
   const sendUserInput = () => {
-    alert(userInput);
-    location.reload();
+    axios
+      .post(
+        "http://localhost:8080/pad/submit",
+        JSON.stringify({
+          padId: keypad.id,
+          userInput,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      .then(
+        res => {
+          alert(res.data.decoded)
+          location.reload();
+        }
+      );
   }
 
   return {
